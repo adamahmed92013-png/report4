@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قلعة التنانين MONSTER | النظام الملكي المطور</title>
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-orange: #ff4500;
+            --dragon-red: #ff1e00;
+            --neon-glow: rgba(255, 69, 0, 0.7);
+            --bg-dark: #05070c;
+            --card-bg: #0d121f;
+            --input-bg: #131a2b;
+            --text-main: #ffffff;
+            --text-sub: #cbd5e1;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Cairo', sans-serif;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(255, 69, 0, 0.25) 0%, transparent 60%),
+                radial-gradient(circle at 10% 90%, rgba(255, 30, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(255, 120, 0, 0.15) 0%, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .navbar-custom {
+            background-color: rgba(8, 12, 20, 0.95);
+            border-bottom: 3px solid var(--primary-orange);
+            backdrop-filter: blur(15px);
+        }
+
+        .card-custom {
+            background-color: var(--card-bg);
+            border: 2px solid rgba(255, 69, 0, 0.4);
+            border-radius: 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .form-control {
+            background-color: var(--input-bg);
+            border: 2px solid #23314f;
+            color: #ffffff !important;
+            border-radius: 16px;
+            padding: 16px 20px;
+        }
+
+        .form-control:focus {
+            background-color: #1a253c;
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 25px var(--neon-glow);
+        }
+
+        .btn-neon {
+            background: linear-gradient(135deg, #ff5500 0%, #cc1100 100%);
+            color: #ffffff;
+            font-weight: 900;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 28px;
+            box-shadow: 0 6px 20px var(--neon-glow);
+            transition: 0.3s;
+        }
+
+        .btn-neon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 69, 0, 0.9);
+            color: #ffffff;
+        }
+
+        .chat-box-container {
+            background-color: #070a12;
+            border: 2px solid rgba(255, 69, 0, 0.4);
+            border-radius: 20px;
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .chat-bubble.user { background: linear-gradient(135deg, #182238, #101626); border-right: 5px solid var(--primary-orange); align-self: flex-start; }
+        .chat-bubble.admin { background: linear-gradient(135deg, #ff4500, #991100); align-self: flex-end; color: #fff; }
+        .chat-bubble.bot { background-color: #131b2e; border: 1px dashed var(--primary-orange); align-self: center; color: #ffd1a9; text-align: right; max-width: 90%; }
+
+        .admin-card { background-color: #090e1a; border: 1px solid #23314f; border-radius: 18px; margin-bottom: 16px; cursor: pointer; transition: 0.3s; }
+        .admin-card:hover { border-color: var(--primary-orange); transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container py-2">
+            <a class="navbar-brand d-flex align-items-center gap-3" href="#">
+                <i class="fa-solid fa-dragon text-warning fs-1"></i>
+                <span class="fw-bold fs-3 text-white">MONSTER | قلعة التنانين</span>
+            </a>
+            <button class="btn btn-warning rounded-pill px-4 py-2 fw-bold ms-auto position-relative" onclick="openAdminModal()">
+                <i class="fa-solid fa-shield-halved me-2"></i> لوحة الأدمن الملكية
+                <span id="badgeNotificationCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="text-center py-5">
+        <div class="container">
+            <h1 class="display-5 fw-bold text-white">غرفة المحادثة والدعم الفني المباشر</h1>
+            <p class="fs-5 text-sub mt-2">أدخل الـ ID الخاص بك فقط لمتابعة ردود الإدارة أو التحدث مع المساعد</p>
+        </div>
+    </header>
+
+    <div class="container pb-5">
+        <!-- Step 1: Enter ID Form -->
+        <div class="row justify-content-center" id="idEntrySection">
+            <div class="col-lg-6">
+                <div class="card card-custom p-4 p-md-5 text-center">
+                    <i class="fa-solid fa-id-card fa-4x text-warning mb-3"></i>
+                    <h3 class="text-white fw-bold mb-3">دخول الأعضاء بالـ ID</h3>
+                    <form onsubmit="event.preventDefault(); verifyUserAndOpenChat();">
+                        <div class="mb-4 text-end">
+                            <label class="form-label text-warning fw-bold">رقم الـ ID (10 أرقام):</label>
+                            <input type="text" maxlength="10" class="form-control text-center fs-4 font-monospace py-3" id="playerCheckID" placeholder="1234567890" required>
+                        </div>
+                        <button type="submit" class="btn btn-neon w-100 py-3 fs-5">دخول لمتابعة الشات والردود <i class="fa-solid fa-arrow-left ms-2"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Chat Room & Status Indicator -->
+        <div class="row justify-content-center d-none" id="chatRoomSection">
+            <div class="col-lg-9">
+                <div class="card card-custom p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary">
+                        <div>
+                            <h4 class="text-warning fw-bold m-0"><i class="fa-solid fa-robot me-2"></i> صندوق المحادثة والدعم</h4>
+                            <span class="badge bg-success mt-2 fs-6 px-3 py-2" id="chatUserInfoBadge"></span>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <button class="btn btn-sm btn-warning fw-bold px-3 py-2 shadow" onclick="sendChatToAdminManual()">
+                                <i class="fa-solid fa-paper-plane me-1"></i> إرسال للإدارة
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger fw-bold px-3 py-2" onclick="leaveChat()">
+                                <i class="fa-solid fa-right-from-bracket me-1"></i> خروج
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- شريط حالة الرد (قيد الانتظار أو تم الرد) -->
+                    <div id="statusBanner" class="alert fw-bold text-center py-2 mb-3"></div>
+
+                    <div class="chat-box-container mb-3" id="chatMessagesBox"></div>
+
+                    <form onsubmit="event.preventDefault(); sendUserChatMessage();" class="d-flex gap-2">
+                        <input type="text" class="form-control" id="chatInputText" placeholder="اكتب رسالتك هنا...">
+                        <button type="submit" class="btn btn-neon px-4">إرسال</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div class="modal fade" id="adminModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content card-custom text-light">
+                <div class="modal-header border-bottom border-secondary">
+                    <h4 class="modal-title text-warning fw-bold"><i class="fa-solid fa-shield-halved me-2"></i> لوحة تحكم الأدمن الملكية</h4>
+                    <button type="button" class="btn-close btn-close-white" onclick="closeAndLockAdmin()"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="adminLoginScreen" class="p-4 text-center">
+                        <i class="fa-solid fa-lock fa-4x text-warning mb-3"></i>
+                        <h3 class="mb-3 fw-bold">تسجيل دخول الأدمن</h3>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <input type="password" id="adminPassInput" class="form-control text-center fs-3 mb-3" placeholder="الكود السري">
+                                <button class="btn btn-neon w-100 py-3 fs-5" onclick="verifyAdminPass()">دخول لوحة البلاغات</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="adminDashboardScreen" class="d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary">
+                            <h5 class="text-warning fw-bold m-0">قائمة الأعضاء والمحادثات</h5>
+                            <button class="btn btn-sm btn-outline-danger fw-bold px-3 py-2" onclick="clearAllChats()"><i class="fa-solid fa-trash me-1"></i> مسح الكل</button>
+                        </div>
+                        <div id="adminChatsContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Reply Modal -->
+    <div class="modal fade" id="adminReplyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content card-custom text-light">
+                <div class="modal-header border-bottom border-secondary">
+                    <h4 class="modal-title text-warning fw-bold m-0" id="adminReplyModalTitle">محادثة العضو</h4>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="chat-box-container mb-3" id="adminModalChatBox" style="height: 300px;"></div>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="adminReplyInput" placeholder="اكتب ردك المباشر كأدمن..">
+                        <button class="btn btn-neon px-4" onclick="sendAdminReplyMessage()">إرسال الرد</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- App Logic -->
+    <script>
+        const ADMIN_SECRET_CODE = '60156611';
+
+        let activeUser = null;
+        let activeChatSession = null;
+        let currentAdminTargetID = null;
+
+        function getAllChats() {
+            const data = localStorage.getItem('monster_chats');
+            return data ? JSON.parse(data) : {};
+        }
+
+        function saveAllChats(chats) {
+            localStorage.setItem('monster_chats', JSON.stringify(chats));
+            updateGlobalNotificationBadge();
+        }
+
+        window.verifyUserAndOpenChat = function() {
+            const idVal = document.getElementById('playerCheckID').value.trim();
+
+            if (!/^\d{10}$/.test(idVal)) {
+                alert("برجاء إدخال ID صحيح مكون من 10 أرقام.");
+                return;
+            }
+
+            activeUser = { id: idVal };
+            let allChats = getAllChats();
+            
+            if (allChats[idVal]) {
+                activeChatSession = allChats[idVal];
+            } else {
+                activeChatSession = {
+                    id: activeUser.id,
+                    date: new Date().toLocaleString("ar-EG"),
+                    status: 'normal', // normal, pending, answered
+                    messages: {
+                        'msg_init': { id: 'msg_init', sender: 'bot', text: 'أهلاً بك يا بطل! أنا مساعدك الذكي. إذا كنت بحاجة لتدخل بشري، اضغط على زر "إرسال للإدارة" وسيتم تحويلك للأدمن فوراً.' }
+                    }
+                };
+                allChats[idVal] = activeChatSession;
+                saveAllChats(allChats);
+            }
+
+            document.getElementById('idEntrySection').classList.add('d-none');
+            document.getElementById('chatRoomSection').classList.remove('d-none');
+            document.getElementById('chatUserInfoBadge').innerText = `الـ ID: ${activeUser.id}`;
+            
+            renderChatMessages();
+            updateStatusBanner();
+            updateGlobalNotificationBadge();
+        };
+
+        function saveCurrentChatSession() {
+            if (!activeUser) return;
+            let allChats = getAllChats();
+            // تحديث من الـ LocalStorage للتأكد من حالة الرد لو الأدمن رد عليه وهو فاتح
+            if(allChats[activeUser.id]) {
+                activeChatSession.status = allChats[activeUser.id].status;
+                activeChatSession.messages = allChats[activeUser.id].messages;
+            } else {
+                allChats[activeUser.id] = activeChatSession;
+            }
+            saveAllChats(allChats);
+        }
+
+        window.renderChatMessages = function() {
+            // تحديث البيانات من المخزن للتأكد لو فيه رد وصل من الأدمن
+            let allChats = getAllChats();
+            if(activeUser && allChats[activeUser.id]) {
+                activeChatSession = allChats[activeUser.id];
+            }
+
+            const box = document.getElementById('chatMessagesBox');
+            if (!activeChatSession || !activeChatSession.messages) return;
+            let html = '';
+            Object.values(activeChatSession.messages).forEach(msg => {
+                if (msg.sender === 'bot') {
+                    html += `<div class="chat-bubble bot"><div class="text-warning fw-bold mb-1"><i class="fa-solid fa-robot"></i> المساعد الذكي:</div><div>${msg.text}</div></div>`;
+                } else if (msg.sender === 'user') {
+                    html += `<div class="chat-bubble user"><div class="text-warning fw-bold mb-1">أنت:</div><div>${msg.text}</div></div>`;
+                } else if (msg.sender === 'admin') {
+                    html += `<div class="chat-bubble admin"><div class="text-warning fw-bold mb-1"><i class="fa-solid fa-shield-halved"></i> الأدمن (آدم):</div><div>${msg.text}</div></div>`;
+                }
+            });
+            box.innerHTML = html;
+            box.scrollTop = box.scrollHeight;
+            updateStatusBanner();
+        };
+
+        function updateStatusBanner() {
+            const banner = document.getElementById('statusBanner');
+            if (!activeChatSession) return;
+
+            if (activeChatSession.status === 'pending') {
+                banner.className = "alert alert-warning fw-bold text-center py-2 mb-3";
+                banner.innerHTML = `<i class="fa-solid fa-clock me-2"></i> حالة طلبك: <b>في انتظار رد الإدارة</b>... يرجى الانتظار أو مراجعة الموقع لاحقاً.`;
+            } else if (activeChatSession.status === 'answered') {
+                banner.className = "alert alert-success fw-bold text-center py-2 mb-3";
+                banner.innerHTML = `<i class="fa-solid fa-circle-check me-2"></i> لقد قام الأدمن (آدم) بالرد عليك! تفقد المحادثة بالأسفل.`;
+            } else {
+                banner.className = "alert alert-dark border border-secondary text-sub fw-bold text-center py-2 mb-3";
+                banner.innerHTML = `<i class="fa-solid fa-comments me-2"></i> المحادثة نشطة مع المساعد الذكي.`;
+            }
+        }
+
+        window.sendUserChatMessage = function() {
+            const txt = document.getElementById('chatInputText').value.trim();
+            if (!txt) return;
+            
+            let allChats = getAllChats();
+            if(allChats[activeUser.id]) {
+                activeChatSession = allChats[activeUser.id];
+            }
+
+            if (!activeChatSession.messages) activeChatSession.messages = {};
+
+            const uId = 'msg_' + Date.now();
+            activeChatSession.messages[uId] = { id: uId, sender: 'user', text: txt };
+
+            let botReply = `أهلاً بك، تم استقبال رسالتك: "${txt}". هل تحتاج لمساعدة أخرى أو تود إرسالها للإدارة؟`;
+
+            setTimeout(() => {
+                const bId = 'msg_bot_' + Date.now();
+                activeChatSession.messages[bId] = { id: bId, sender: 'bot', text: botReply };
+                let currentAll = getAllChats();
+                currentAll[activeUser.id] = activeChatSession;
+                saveAllChats(currentAll);
+                renderChatMessages();
+            }, 500);
+
+            let currentAll = getAllChats();
+            currentAll[activeUser.id] = activeChatSession;
+            saveAllChats(currentAll);
+            renderChatMessages();
+            document.getElementById('chatInputText').value = '';
+        };
+
+        // زرار إرسال الشات للأدارة
+        window.sendChatToAdminManual = function() {
+            if (!activeChatSession) return;
+            let allChats = getAllChats();
+            if(allChats[activeUser.id]) {
+                activeChatSession = allChats[activeUser.id];
+            }
+
+            activeChatSession.status = 'pending'; // تغيير الحالة لـ قيد الانتظار
+            allChats[activeUser.id] = activeChatSession;
+            saveAllChats(allChats);
+            
+            updateStatusBanner();
+            alert("تم إرسال رسالتك للإدارة بنجاح! سيظهر لك رد الأدمن هنا فور انتهائه من المراجعة.");
+        };
+
+        window.leaveChat = function() {
+            document.getElementById('chatRoomSection').classList.add('d-none');
+            document.getElementById('idEntrySection').classList.remove('d-none');
+            activeUser = null;
+            activeChatSession = null;
+        };
+
+        function updateGlobalNotificationBadge() {
+            try {
+                const allChats = getAllChats();
+                let count = 0;
+                Object.values(allChats).forEach(c => { if (c.status === 'pending') count++; });
+                const badge = document.getElementById('badgeNotificationCount');
+                if (count > 0) { badge.innerText = count; badge.classList.remove('d-none'); }
+                else { badge.classList.add('d-none'); }
+            } catch (e) {}
+        }
+
+        let adminModal, adminReplyModal;
+        window.openAdminModal = function() {
+            if (!adminModal) adminModal = new bootstrap.Modal(document.getElementById('adminModal'));
+            document.getElementById('adminLoginScreen').classList.remove('d-none');
+            document.getElementById('adminDashboardScreen').classList.add('d-none');
+            document.getElementById('adminPassInput').value = '';
+            adminModal.show();
+        };
+
+        window.closeAndLockAdmin = function() { if (adminModal) adminModal.hide(); };
+
+        window.verifyAdminPass = function() {
+            if (document.getElementById('adminPassInput').value.trim() === ADMIN_SECRET_CODE) {
+                document.getElementById('adminLoginScreen').classList.add('d-none');
+                document.getElementById('adminDashboardScreen').classList.remove('d-none');
+                renderAdminChatsList();
+            } else {
+                alert("الكود السري غير صحيح!");
+            }
+        };
+
+        window.renderAdminChatsList = function() {
+            const container = document.getElementById('adminChatsContainer');
+            const allChats = getAllChats();
+            let html = '';
+            let hasChats = false;
+
+            Object.entries(allChats).forEach(([key, chat]) => {
+                hasChats = true;
+                let statusBadge = '<span class="badge bg-secondary">عادي</span>';
+                if (chat.status === 'pending') statusBadge = '<span class="badge bg-danger">يحتاج رد (قيد الانتظار)</span>';
+                else if (chat.status === 'answered') statusBadge = '<span class="badge bg-success">تم الرد</span>';
+
+                html += `
+                <div class="admin-card p-3" onclick="openAdminReplyModal('${key}')">
+                    <div class="d-flex justify-content-between text-warning fw-bold mb-1">
+                        <span>رقم الـ ID: ${chat.id}</span>
+                        ${statusBadge}
+                    </div>
+                    <div class="text-sub small">تاريخ البدء: ${chat.date}</div>
+                    <button class="btn btn-sm btn-outline-danger mt-2" onclick="event.stopPropagation(); deleteChatSession('${key}')">حذف المحادثة</button>
+                </div>`;
+            });
+
+            container.innerHTML = hasChats ? html : `<div class="text-center text-sub py-4">لا توجد محادثات مسجلة حالياً.</div>`;
+        };
+
+        window.openAdminReplyModal = function(key) {
+            currentAdminTargetID = key;
+            const allChats = getAllChats();
+            if (!allChats[key]) return;
+            activeChatSession = allChats[key];
+            
+            document.getElementById('adminReplyModalTitle').innerText = `محادثة العضو - الـ ID: ${activeChatSession.id}`;
+            renderAdminModalChatBox(activeChatSession);
+            if (!adminReplyModal) adminReplyModal = new bootstrap.Modal(document.getElementById('adminReplyModal'));
+            adminReplyModal.show();
+        };
+
+        window.renderAdminModalChatBox = function(chat) {
+            const box = document.getElementById('adminModalChatBox');
+            let html = '';
+            if (!chat.messages) return;
+            Object.values(chat.messages).forEach(msg => {
+                if (msg.sender === 'bot') html += `<div class="chat-bubble bot"><b>المساعد:</b> ${msg.text}</div>`;
+                else if (msg.sender === 'user') html += `<div class="chat-bubble user"><b>العضو:</b> ${msg.text}</div>`;
+                else if (msg.sender === 'admin') html += `<div class="chat-bubble admin"><b>أنت (الأدمن):</b> ${msg.text}</div>`;
+            });
+            box.innerHTML = html;
+            box.scrollTop = box.scrollHeight;
+        };
+
+        window.sendAdminReplyMessage = function() {
+            const txt = document.getElementById('adminReplyInput').value.trim();
+            if (!txt || !currentAdminTargetID) return;
+            let allChats = getAllChats();
+            let chat = allChats[currentAdminTargetID];
+            if (!chat) return;
+            if (!chat.messages) chat.messages = {};
+            
+            const id = 'msg_' + Date.now();
+            chat.messages[id] = { id, sender: 'admin', text: txt };
+            chat.status = 'answered'; // تغيير الحالة لـ تم الرد!
+            
+            allChats[currentAdminTargetID] = chat;
+            saveAllChats(allChats);
+            
+            document.getElementById('adminReplyInput').value = '';
+            renderAdminModalChatBox(chat);
+            renderAdminChatsList();
+        };
+
+        window.deleteChatSession = function(key) {
+            if (confirm("حذف هذه المحادثة؟")) {
+                let allChats = getAllChats();
+                delete allChats[key];
+                saveAllChats(allChats);
+                renderAdminChatsList();
+            }
+        };
+
+        window.clearAllChats = function() {
+            if (confirm("مسح جميع المحادثات؟")) {
+                localStorage.removeItem('monster_chats');
+                renderAdminChatsList();
+                updateGlobalNotificationBadge();
+            }
+        };
+
+        updateGlobalNotificationBadge();
+    </script>
+</body>
+</html>
